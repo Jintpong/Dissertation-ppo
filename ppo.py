@@ -28,7 +28,7 @@ class PPOMemory:
     def store_memory(self, states, action, probs, vals, reward, dones):
         self.states.append(state)
         self.probs.append(probs)
-        self.action.append(action)
+        self.actions.append(action)
         self.vals.append(vals)
         self.reward.append(reward)
         self.dones.append(done)
@@ -36,14 +36,14 @@ class PPOMemory:
     def clear_memory(self):
         self.states = []
         self.probs = []
-        self.action = []
+        self.actions = []
         self.vals = []
         self.reward = []
         self.dones = []
 
 class Network(nn.Module):
     def __init__(self, n_actions, input_dims, alpha, fc1_dims = 256, fc2_dims = 256, chkpt_dir = 'tmp/ppo'):
-        super(ActorNetwork, self).__init__()
+        super(Network, self).__init__()
 
         self.checkpoint_file = os.path.join(chkpt_dir, 'actor_torch_ppo')
         self.actor = nn.Sequential(
@@ -60,7 +60,7 @@ class Network(nn.Module):
 
     def forward(self, state):
         dist = self.actor(state)
-        dist = Categorical(cal(dist))
+        dist = Categorical(dist)
 
         return dist 
 
@@ -78,7 +78,7 @@ class CriticNetwork(nn.Module):
         self.checkpoint_file = os.path.join(chkpt_dir, 'critic_torch_ppo')
         self.critic = nn.Sequential(
             nn.Linear(*input_dims, fc1_dims),
-            nn.ReLU,
+            nn.ReLU(),
             nn.Linear(fc1_dims, fc2_dims),
             nn.ReLU(),
             nn.Linear(fc2_dims, 1)
@@ -124,7 +124,7 @@ class Agent:
         self.actor.load_checkpoint()
         self.critic.load_checkpoint()
 
-    def choose_asctoion(self, observation):
+    def choose_action(self, observation):
         state = T.tensor([observation], dtype = T.float).to(self.actor.device)
 
         dist = self.actor(state)
@@ -159,7 +159,7 @@ class Agent:
             for batch in batches:
                 states = T.tensor(state_arr[batch], dtype=T.float).to(self.actor.device)
                 old_probs = T.tensor(old_probs_arr[batch]).to(self.actor.device)
-                actions = T.tensor(actor_arr[batch]).to(self.actor.device)
+                actions = T.tensor(action_arr[batch]).to(self.actor.device)
 
                 dist = self.actor(states)
                 critic_value = self.critic(states)
@@ -171,6 +171,8 @@ class Agent:
                 weighted_clipped_probs = T.clamp(prob_ratio, 1-self.policy_clip, 1+self.policy_clip)*advantage[batch]
 
                 actor_loss = -T.min(weighted_probs, weighted_clipped_probs).mean()
+
+                returns = advantage[batch] + values[batch]
                 critic_loss = (returns-critic_value)**2 
                 critic_loss = critic_loss.mean()
 
@@ -181,6 +183,6 @@ class Agent:
                 self.actor.optimizer.step()
                 self.critic.optimizer.step()
 
-        self.memory_clear_memory()
+        self.memory.clear_memory()
 
 
