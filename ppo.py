@@ -26,12 +26,12 @@ class PPOMemory:
         return np.array(self.states), np.array(self.actions), np.array(self.probs), np.array(self.vals), np.array(self.rewards), np.array(self.dones), batches
 
     def store_memory(self, states, action, probs, vals, reward, dones):
-        self.states.append(state)
+        self.states.append(states)
         self.probs.append(probs)
         self.actions.append(action)
         self.vals.append(vals)
-        self.reward.append(reward)
-        self.dones.append(done)
+        self.rewards.append(reward)
+        self.dones.append(dones)
 
     def clear_memory(self):
         self.states = []
@@ -45,6 +45,8 @@ class Network(nn.Module):
     def __init__(self, n_actions, input_dims, alpha, fc1_dims = 256, fc2_dims = 256, chkpt_dir = 'tmp/ppo'):
         super(Network, self).__init__()
 
+
+        os.makedirs(chkpt_dir, exist_ok=True)
         self.checkpoint_file = os.path.join(chkpt_dir, 'actor_torch_ppo')
         self.actor = nn.Sequential(
             nn.Linear(*input_dims, fc1_dims),
@@ -75,6 +77,8 @@ class CriticNetwork(nn.Module):
     def __init__(self, input_dims, alpha, fc1_dims= 256, fc2_dims = 256, chkpt_dir = 'tmp/ppo'):
         super(CriticNetwork, self).__init__()
 
+
+        os.makedirs(chkpt_dir, exist_ok=True)
         self.checkpoint_file = os.path.join(chkpt_dir, 'critic_torch_ppo')
         self.critic = nn.Sequential(
             nn.Linear(*input_dims, fc1_dims),
@@ -100,7 +104,7 @@ class CriticNetwork(nn.Module):
         T.load_state_dict(T.load(self.checkpoint_file))
 
 class Agent:
-    def __init__(self,n_actions, gamma=0.99, alpha = 0.0003, gae_lambda = 0.95,
+    def __init__(self,n_actions,input_dims, gamma=0.99, alpha = 0.0003, gae_lambda = 0.95,
     policy_clip = 0.2 , batch_size = 64, N=2048, n_epochs = 10):
 
         self.gamma = gamma 
@@ -125,7 +129,8 @@ class Agent:
         self.critic.load_checkpoint()
 
     def choose_action(self, observation):
-        state = T.tensor([observation], dtype = T.float).to(self.actor.device)
+        state = T.tensor(np.array(observation), dtype=T.float32).unsqueeze(0).to(self.actor.device)
+
 
         dist = self.actor(state)
         value = self.critic(state)
@@ -139,22 +144,39 @@ class Agent:
 
     def learn(self):
         for _ in range(self.n_epochs):
-            state_arr , action_arr , old_probs_arr, vals_arr, reward.arr, done_arr, batches = self.memory.generate_batches()
+            state_arr, action_arr, old_probs_arr, vals_arr,\
+            reward_arr, dones_arr, batches = \
+                    self.memory.generate_batches()
 
-            values = vals_arr   
+            min_len = min(len(vals_arr), len(reward_arr), len(dones_arr))
+            vals_arr = vals_arr[:min_len]
+            reward_arr = reward_arr[:min_len]
+            dones_arr = dones_arr[:min_len]
+
+
+            values = vals_arr
+            values = np.append(vals_arr, 0)
+            assert len(values) == len(reward_arr) + 1
             advantage = np.zeros(len(reward_arr), dtype=np.float32)
 
-            for t in range(len(reward_arr)-1):
+            for t in range(len(reward_arr)):
                 discount = 1
-                a_t = 0 
-                for k in range(t, len(reward_arr) - 1):
-                    #ˆt =δt +(γλ)δt+1 +···+···+(γλ)T−t+1δT−1, (11) where δt =rt +γV(st+1)−V(st)
-                    a_t += discount * (reward_arr[k] + self.gamma*values[k+1]* (1-int(done_arr[k]))) - values[k]
-                    discount += self.gamma*self.gae_lambda
-                advantage[t] = a_t 
+                a_t = 0
+                for k in range(t, len(reward_arr) ):
+                    delta = reward_arr[k] + self.gamma * values[k + 1] * (1 - int(dones_arr[k])) - values[k]
+                    a_t += discount * delta
+                    discount *= self.gamma * self.gae_lambda
+
+                k = len(reward_arr) - 1
+                if k >= t:
+                    delta = reward_arr[k] - values[k]
+                    a_t += discount * delta
+
+
+                advantage[t] = a_t
             advantage = T.tensor(advantage).to(self.actor.device)
 
-            values = T.tensor(values).to(self.actor.device)
+            values = T.tensor(values[:-1]).to(self.actor.device)
 
             for batch in batches:
                 states = T.tensor(state_arr[batch], dtype=T.float).to(self.actor.device)
