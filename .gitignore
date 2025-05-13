@@ -1,3 +1,5 @@
 venv/
 __pycache__/
 *.pyc
+venv310/
+venv310/
