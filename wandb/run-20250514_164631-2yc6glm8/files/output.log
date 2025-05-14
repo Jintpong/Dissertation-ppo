@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "/Users/jintpongchababnapa/Documents/Dissertation/agent/train.py", line 71, in <module>
+    env = Wheat(mode="train", year1=1982, year2=2007)
+  File "/Users/jintpongchababnapa/Documents/Dissertation/agent/aquacropgymnasium/env.py", line 23, in __init__
+    super(Maize, self).__init__()
+          ^^^^^
+NameError: name 'Maize' is not defined

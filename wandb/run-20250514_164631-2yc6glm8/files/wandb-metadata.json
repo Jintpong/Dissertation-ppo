@@ -1,0 +1,16 @@
+{
+  "os": "macOS-14.0-arm64-arm-64bit-Mach-O",
+  "python": "CPython 3.13.3",
+  "startedAt": "2025-05-14T15:46:31.892735Z",
+  "program": "/Users/jintpongchababnapa/Documents/Dissertation/agent/train.py",
+  "codePath": "train.py",
+  "git": {
+    "remote": "https://github.com/Jintpong/Dissertation-ppo",
+    "commit": "4184bb31eb4ff43679eca22216b9e9d90e6f3efd"
+  },
+  "email": "sp2689@bath.ac.uk",
+  "root": "/Users/jintpongchababnapa/Documents/Dissertation/agent",
+  "host": "Jints-MacBook-Air.local",
+  "executable": "/Users/jintpongchababnapa/Library/Caches/pypoetry/virtualenvs/agent-4rnoUGol-py3.13/bin/python",
+  "codePathLocal": "train.py"
+}
