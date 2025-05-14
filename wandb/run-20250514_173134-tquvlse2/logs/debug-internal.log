@@ -1,0 +1,15 @@
+{"time":"2025-05-14T17:31:34.472786+01:00","level":"INFO","msg":"stream: starting","core version":"0.19.11","symlink path":"/Users/jintpongchababnapa/Documents/Dissertation/agent/wandb/run-20250514_173134-tquvlse2/logs/debug-core.log"}
+{"time":"2025-05-14T17:31:34.776009+01:00","level":"INFO","msg":"created new stream","id":"tquvlse2"}
+{"time":"2025-05-14T17:31:34.77608+01:00","level":"INFO","msg":"stream: started","id":"tquvlse2"}
+{"time":"2025-05-14T17:31:34.77615+01:00","level":"INFO","msg":"writer: Do: started","stream_id":"tquvlse2"}
+{"time":"2025-05-14T17:31:34.776222+01:00","level":"INFO","msg":"handler: started","stream_id":"tquvlse2"}
+{"time":"2025-05-14T17:31:34.7765+01:00","level":"INFO","msg":"sender: started","stream_id":"tquvlse2"}
+{"time":"2025-05-14T17:31:35.024137+01:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-05-14T17:32:42.342735+01:00","level":"INFO","msg":"stream: closing","id":"tquvlse2"}
+{"time":"2025-05-14T17:32:42.343286+01:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-05-14T17:32:42.343558+01:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-05-14T17:32:43.1417+01:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-05-14T17:32:43.420855+01:00","level":"INFO","msg":"handler: closed","stream_id":"tquvlse2"}
+{"time":"2025-05-14T17:32:43.420901+01:00","level":"INFO","msg":"sender: closed","stream_id":"tquvlse2"}
+{"time":"2025-05-14T17:32:43.420934+01:00","level":"INFO","msg":"writer: Close: closed","stream_id":"tquvlse2"}
+{"time":"2025-05-14T17:32:43.420989+01:00","level":"INFO","msg":"stream: closed","id":"tquvlse2"}

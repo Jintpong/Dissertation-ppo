@@ -1,25 +1,12 @@
 import os
 import numpy as np
 import matplotlib.pyplot as plt
-from stable_baselines3 import PPO
-from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize
-from stable_baselines3.common.callbacks import BaseCallback
-from stable_baselines3.common.monitor import Monitor
-from ppo import Agent 
-import warnings
-import logging
 import wandb
 from aquacropgymnasium.env import Wheat
-
 from ppo import Agent
-from aquacropgymnasium.env import Wheat
-import numpy as np
-import os
-import matplotlib.pyplot as plt
 
 output_dir = "./train_output"
 os.makedirs(output_dir, exist_ok=True)
-
 
 timestep_targets = [500_000, 1_000_000, 1_500_000, 2_000_000, 2_500_000]
 
@@ -41,10 +28,9 @@ class RewardLogger:
         self._plot()
 
     def _plot(self):
-        rewards = np.array(self.episode_rewards)
-        x = np.linspace(0, len(rewards), len(rewards))
+        x = np.arange(len(self.episode_rewards))
         plt.figure(figsize=(10, 5))
-        plt.plot(x, rewards, marker='o')
+        plt.plot(x, self.episode_rewards, marker='o')
         plt.xlabel('Episodes')
         plt.ylabel('Total Reward')
         plt.grid(True)
@@ -52,22 +38,21 @@ class RewardLogger:
         plt.savefig(os.path.join(self.output_dir, f"reward_plot_{self.agent_name}.png"), dpi=300)
         plt.close()
 
-
 for train_timesteps in timestep_targets:
-
     wandb.init(
-    project="ppo-wheat-irrigation",
-    name=f"ppo_agent_{train_timesteps}",
-    config={
-        "train_timesteps": train_timesteps,
-        "gamma": 0.98,
-        "alpha": 6.34e-04,
-        "gae_lambda": 0.95,
-        "policy_clip": 0.22,
-        "batch_size": 512,
-        "n_epochs": 23
-    }
+        project="ppo-wheat-irrigation",
+        name=f"ppo_agent_{train_timesteps}",
+        config={
+            "train_timesteps": train_timesteps,
+            "gamma": 0.98,
+            "alpha": 6.34e-04,
+            "gae_lambda": 0.95,
+            "policy_clip": 0.22,
+            "batch_size": 512,
+            "n_epochs": 23
+        }
     )
+
     env = Wheat(mode="train", year1=1982, year2=2007)
     agent = Agent(
         n_actions=env.action_space.n,
@@ -84,6 +69,7 @@ for train_timesteps in timestep_targets:
 
     total_timesteps = 0
     episode = 0
+
     while total_timesteps < train_timesteps:
         obs, _ = env.reset()
         done = False
@@ -101,16 +87,16 @@ for train_timesteps in timestep_targets:
         agent.learn()
         logger.log(score)
         total_timesteps += steps
+
         wandb.log({
             "Episode": episode,
             "Episode_Reward": score,
             "Steps_in_Episode": steps,
             "Total_Timesteps": total_timesteps
         })
-        print(f"[{train_timesteps}] Episode {episode} | Steps: {steps} | Total Reward: {score:.2f} | Timesteps: {total_timesteps}")
+        print(f"[{train_timesteps}] Episode {episode} | Steps: {steps} | Reward: {score:.2f} | Timesteps: {total_timesteps}")
         episode += 1
 
     agent.save_model(path=os.path.join(output_dir, f"ppo_agent_{train_timesteps}.pth"))
     logger.finalize()
     wandb.finish()
-

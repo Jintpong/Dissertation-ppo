@@ -1,0 +1,21 @@
+Traceback (most recent call last):
+  File "/Users/jintpongchababnapa/Documents/Dissertation/agent/train.py", line 88, in <module>
+    obs, _ = env.reset()
+             ~~~~~~~~~^^
+  File "/Users/jintpongchababnapa/Documents/Dissertation/agent/aquacropgymnasium/env.py", line 70, in reset
+    self.model.run_model()
+    ~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/jintpongchababnapa/Library/Caches/pypoetry/virtualenvs/agent-4rnoUGol-py3.13/lib/python3.13/site-packages/aquacrop/core.py", line 269, in run_model
+    self._initialize()
+    ~~~~~~~~~~~~~~~~^^
+  File "/Users/jintpongchababnapa/Library/Caches/pypoetry/virtualenvs/agent-4rnoUGol-py3.13/lib/python3.13/site-packages/aquacrop/core.py", line 204, in _initialize
+    self._clock_struct, self._param_struct = read_model_parameters(
+                                             ~~~~~~~~~~~~~~~~~~~~~^
+        self._clock_struct, self.soil, self.crop, self.weather_df
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/jintpongchababnapa/Library/Caches/pypoetry/virtualenvs/agent-4rnoUGol-py3.13/lib/python3.13/site-packages/aquacrop/initialize/read_model_parameters.py", line 166, in read_model_parameters
+    pd.to_datetime(str(plant_years[0]) + "/" + crop.planting_date)
+                       ~~~~~~~~~~~^^^
+IndexError: list index out of range

@@ -18,7 +18,7 @@ class Wheat(gym.Env):
         year2=2018,
         crop='Wheat',
         climate_file=None,
-        planting_date='11/01'
+        planting_date='05/01'
     ):
         super(Wheat, self).__init__()
         self.year1 = year1
@@ -30,8 +30,8 @@ class Wheat(gym.Env):
         base_path = os.path.dirname(os.path.dirname(__file__))
         self.climate_file_path = os.path.abspath(os.path.join(base_path, 'weather_data', self.climate))
 
-        self.planting_date = planting_date if planting_date is not None else '05/01'
-        self.soil = Soil('SandyLoam')
+        self.planting_date = planting_date
+        self.soil = Soil('Loam')
 
         self.observation_space = spaces.Box(low=-np.inf, high=np.inf, shape=(26,), dtype=np.float32)
 
@@ -53,7 +53,7 @@ class Wheat(gym.Env):
         except FileNotFoundError:
             raise FileNotFoundError(f"Climate file not found at {self.climate_file_path}")
 
-        self.wdf['Year'] = self.simcalyear
+        #self.wdf['Year'] = self.simcalyear
         self.total_irrigation_applied = 0
         self.cumulative_reward = 0
 
