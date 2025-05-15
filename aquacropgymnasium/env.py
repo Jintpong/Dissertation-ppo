@@ -18,7 +18,7 @@ class Wheat(gym.Env):
         year2=2018,
         crop='Wheat',
         climate_file=None,
-        planting_date='05/01'
+        planting_date=None
     ):
         super(Wheat, self).__init__()
         self.year1 = year1
@@ -30,7 +30,7 @@ class Wheat(gym.Env):
         base_path = os.path.dirname(os.path.dirname(__file__))
         self.climate_file_path = os.path.abspath(os.path.join(base_path, 'weather_data', self.climate))
 
-        self.planting_date = planting_date
+        self.planting_date = planting_date if planting_date is not None else "01/01"
         self.soil = Soil('Loam')
 
         self.observation_space = spaces.Box(low=-np.inf, high=np.inf, shape=(26,), dtype=np.float32)

@@ -38,10 +38,8 @@ class RewardLogging(BaseCallback):
         self.output_dir = output_dir
         self.num_intervals = num_intervals
         self.episode_rewards = []
-        self.episode_lengths = []
         self.current_episode_rewards = []
         self.total_steps = 0
-        self.current_episode_length = 0
 
     def _on_step(self) -> bool:
         reward = self.locals['rewards'][0]
@@ -50,17 +48,8 @@ class RewardLogging(BaseCallback):
 
         if 'dones' in self.locals and any(self.locals['dones']):
             total_reward = np.sum(self.current_episode_rewards)
-            ep_len = self.current_episode_length
             self.episode_rewards.append(total_reward)
             self.current_episode_rewards = []
-
-            wandb.log({
-                "ep_rew": total_reward,
-                "ep_len": ep_len
-            }, step=self.num_timesteps)
-
-            self.current_episode_rewards = []
-            self.current_episode_length = 0
 
         return True
 

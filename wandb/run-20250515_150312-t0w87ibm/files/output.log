@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "/Users/jintpongchababnapa/Documents/Dissertation/agent/train.py", line 24, in <module>
+    class RewardLogging(BaseCallback):
+  File "/Users/jintpongchababnapa/Documents/Dissertation/agent/train.py", line 84, in RewardLogging
+    train_env = DummyVecEnv([lambda: Monitor(env)])
+  File "/Users/jintpongchababnapa/Documents/Dissertation/agent/venv310/lib/python3.10/site-packages/stable_baselines3/common/vec_env/dummy_vec_env.py", line 31, in __init__
+    self.envs = [_patch_env(fn()) for fn in env_fns]
+  File "/Users/jintpongchababnapa/Documents/Dissertation/agent/venv310/lib/python3.10/site-packages/stable_baselines3/common/vec_env/dummy_vec_env.py", line 31, in <listcomp>
+    self.envs = [_patch_env(fn()) for fn in env_fns]
+  File "/Users/jintpongchababnapa/Documents/Dissertation/agent/train.py", line 84, in <lambda>
+    train_env = DummyVecEnv([lambda: Monitor(env)])
+NameError: name 'env' is not defined

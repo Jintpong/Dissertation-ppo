@@ -1,0 +1,161 @@
+Using cpu device
+Training ppo_model_500000 for 500000 timesteps...
+Logging to ./train_output/tensorboard_logs_500000/PPO_1
+---------------------------------
+| rollout/           |          |
+|    ep_len_mean     | 196      |
+|    ep_rew_mean     | -2.3e+05 |
+| time/              |          |
+|    fps             | 624      |
+|    iterations      | 1        |
+|    time_elapsed    | 3        |
+|    total_timesteps | 2048     |
+---------------------------------
+-----------------------------------------
+| rollout/                |             |
+|    ep_len_mean          | 196         |
+|    ep_rew_mean          | -2.12e+05   |
+| time/                   |             |
+|    fps                  | 576         |
+|    iterations           | 2           |
+|    time_elapsed         | 7           |
+|    total_timesteps      | 4096        |
+| train/                  |             |
+|    approx_kl            | 0.011708019 |
+|    clip_fraction        | 0.078       |
+|    clip_range           | 0.22        |
+|    entropy_loss         | -0.685      |
+|    explained_variance   | -0.33       |
+|    learning_rate        | 0.000634    |
+|    loss                 | 0.0959      |
+|    n_updates            | 23          |
+|    policy_gradient_loss | -0.0113     |
+|    value_loss           | 0.799       |
+-----------------------------------------
+-----------------------------------------
+| rollout/                |             |
+|    ep_len_mean          | 196         |
+|    ep_rew_mean          | -1.99e+05   |
+| time/                   |             |
+|    fps                  | 620         |
+|    iterations           | 3           |
+|    time_elapsed         | 9           |
+|    total_timesteps      | 6144        |
+| train/                  |             |
+|    approx_kl            | 0.012363835 |
+|    clip_fraction        | 0.0873      |
+|    clip_range           | 0.22        |
+|    entropy_loss         | -0.664      |
+|    explained_variance   | 0.803       |
+|    learning_rate        | 0.000634    |
+|    loss                 | -0.00423    |
+|    n_updates            | 46          |
+|    policy_gradient_loss | -0.0144     |
+|    value_loss           | 0.091       |
+-----------------------------------------
+----------------------------------------
+| rollout/                |            |
+|    ep_len_mean          | 196        |
+|    ep_rew_mean          | -1.75e+05  |
+| time/                   |            |
+|    fps                  | 582        |
+|    iterations           | 4          |
+|    time_elapsed         | 14         |
+|    total_timesteps      | 8192       |
+| train/                  |            |
+|    approx_kl            | 0.01520506 |
+|    clip_fraction        | 0.122      |
+|    clip_range           | 0.22       |
+|    entropy_loss         | -0.62      |
+|    explained_variance   | 0.931      |
+|    learning_rate        | 0.000634   |
+|    loss                 | -0.00291   |
+|    n_updates            | 69         |
+|    policy_gradient_loss | -0.0187    |
+|    value_loss           | 0.0416     |
+----------------------------------------
+-----------------------------------------
+| rollout/                |             |
+|    ep_len_mean          | 196         |
+|    ep_rew_mean          | -1.53e+05   |
+| time/                   |             |
+|    fps                  | 540         |
+|    iterations           | 5           |
+|    time_elapsed         | 18          |
+|    total_timesteps      | 10240       |
+| train/                  |             |
+|    approx_kl            | 0.014245264 |
+|    clip_fraction        | 0.115       |
+|    clip_range           | 0.22        |
+|    entropy_loss         | -0.561      |
+|    explained_variance   | 0.807       |
+|    learning_rate        | 0.000634    |
+|    loss                 | -0.0148     |
+|    n_updates            | 92          |
+|    policy_gradient_loss | -0.0153     |
+|    value_loss           | 0.0319      |
+-----------------------------------------
+-----------------------------------------
+| rollout/                |             |
+|    ep_len_mean          | 196         |
+|    ep_rew_mean          | -1.37e+05   |
+| time/                   |             |
+|    fps                  | 550         |
+|    iterations           | 6           |
+|    time_elapsed         | 22          |
+|    total_timesteps      | 12288       |
+| train/                  |             |
+|    approx_kl            | 0.027555784 |
+|    clip_fraction        | 0.117       |
+|    clip_range           | 0.22        |
+|    entropy_loss         | -0.474      |
+|    explained_variance   | 0.758       |
+|    learning_rate        | 0.000634    |
+|    loss                 | -0.0237     |
+|    n_updates            | 115         |
+|    policy_gradient_loss | -0.0192     |
+|    value_loss           | 0.0252      |
+-----------------------------------------
+----------------------------------------
+| rollout/                |            |
+|    ep_len_mean          | 196        |
+|    ep_rew_mean          | -1.22e+05  |
+| time/                   |            |
+|    fps                  | 566        |
+|    iterations           | 7          |
+|    time_elapsed         | 25         |
+|    total_timesteps      | 14336      |
+| train/                  |            |
+|    approx_kl            | 0.01760473 |
+|    clip_fraction        | 0.0869     |
+|    clip_range           | 0.22       |
+|    entropy_loss         | -0.42      |
+|    explained_variance   | 0.689      |
+|    learning_rate        | 0.000634   |
+|    loss                 | -0.0185    |
+|    n_updates            | 138        |
+|    policy_gradient_loss | -0.0146    |
+|    value_loss           | 0.0138     |
+----------------------------------------
+Traceback (most recent call last):
+  File "/Users/jintpongchababnapa/Documents/Dissertation/agent/train.py", line 127, in <module>
+    ppo_model.learn(total_timesteps=train_timesteps, callback=ppo_reward_logging)
+  File "/Users/jintpongchababnapa/Documents/Dissertation/agent/venv310/lib/python3.10/site-packages/stable_baselines3/ppo/ppo.py", line 311, in learn
+    return super().learn(
+  File "/Users/jintpongchababnapa/Documents/Dissertation/agent/venv310/lib/python3.10/site-packages/stable_baselines3/common/on_policy_algorithm.py", line 324, in learn
+    continue_training = self.collect_rollouts(self.env, callback, self.rollout_buffer, n_rollout_steps=self.n_steps)
+  File "/Users/jintpongchababnapa/Documents/Dissertation/agent/venv310/lib/python3.10/site-packages/stable_baselines3/common/on_policy_algorithm.py", line 202, in collect_rollouts
+    actions, values, log_probs = self.policy(obs_tensor)
+  File "/Users/jintpongchababnapa/Documents/Dissertation/agent/venv310/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1751, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/Users/jintpongchababnapa/Documents/Dissertation/agent/venv310/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1762, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/Users/jintpongchababnapa/Documents/Dissertation/agent/venv310/lib/python3.10/site-packages/stable_baselines3/common/policies.py", line 655, in forward
+    actions = distribution.get_actions(deterministic=deterministic)
+  File "/Users/jintpongchababnapa/Documents/Dissertation/agent/venv310/lib/python3.10/site-packages/stable_baselines3/common/distributions.py", line 89, in get_actions
+    return self.sample()
+  File "/Users/jintpongchababnapa/Documents/Dissertation/agent/venv310/lib/python3.10/site-packages/stable_baselines3/common/distributions.py", line 298, in sample
+    return self.distribution.sample()
+  File "/Users/jintpongchababnapa/Documents/Dissertation/agent/venv310/lib/python3.10/site-packages/torch/distributions/categorical.py", line 135, in sample
+    samples_2d = torch.multinomial(probs_2d, sample_shape.numel(), True).T
+KeyboardInterrupt

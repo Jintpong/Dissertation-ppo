@@ -1,0 +1,44 @@
+{
+  "os": "macOS-14.0-arm64-arm-64bit",
+  "python": "CPython 3.10.17",
+  "startedAt": "2025-05-15T14:08:59.596375Z",
+  "program": "/Users/jintpongchababnapa/Documents/Dissertation/agent/train.py",
+  "codePath": "train.py",
+  "git": {
+    "remote": "https://github.com/Jintpong/Dissertation-ppo",
+    "commit": "af4afb1be717b8fd27e78b27dba9dc9e4f6040ff"
+  },
+  "email": "sp2689@bath.ac.uk",
+  "root": "/Users/jintpongchababnapa/Documents/Dissertation/agent",
+  "host": "Jints-MacBook-Air.local",
+  "executable": "/Users/jintpongchababnapa/Documents/Dissertation/agent/venv310/bin/python",
+  "codePathLocal": "train.py",
+  "cpu_count": 8,
+  "cpu_count_logical": 8,
+  "disk": {
+    "/": {
+      "total": "245107195904",
+      "used": "195282391040"
+    },
+    "/System/Volumes/Data": {
+      "total": "245107195904",
+      "used": "195282391040"
+    }
+  },
+  "memory": {
+    "total": "8589934592"
+  },
+  "cpu": {
+    "count": 8,
+    "countLogical": 8
+  },
+  "apple": {
+    "name": "Apple M1",
+    "ecpuCores": 4,
+    "pcpuCores": 4,
+    "gpuCores": 7,
+    "memoryGb": 8,
+    "swapTotalBytes": "10737418240",
+    "ramTotalBytes": "8589934592"
+  }
+}

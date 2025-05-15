@@ -1,0 +1,252 @@
+diff --git a/aquacropgymnasium/env.py b/aquacropgymnasium/env.py
+index 43ffa69b..06bc3147 100644
+--- a/aquacropgymnasium/env.py
++++ b/aquacropgymnasium/env.py
+@@ -18,7 +18,7 @@ class Wheat(gym.Env):
+         year2=2018,
+         crop='Wheat',
+         climate_file=None,
+-        planting_date='05/01'
++        planting_date=None
+     ):
+         super(Wheat, self).__init__()
+         self.year1 = year1
+diff --git a/train.py b/train.py
+index c787fbf3..7825fc1d 100644
+--- a/train.py
++++ b/train.py
+@@ -2,101 +2,126 @@ import os
+ import numpy as np
+ import matplotlib.pyplot as plt
+ import wandb
++from stable_baselines3 import PPO
++from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize
++from stable_baselines3.common.callbacks import BaseCallback
++from stable_baselines3.common.monitor import Monitor
+ from aquacropgymnasium.env import Wheat
+-from ppo import Agent
+ 
+-output_dir = "./train_output"
++output_dir = './train_output'
+ os.makedirs(output_dir, exist_ok=True)
+ 
+-timestep_targets = [500_000, 1_000_000, 1_500_000, 2_000_000, 2_500_000]
++wandb.init(
++    project="ppo-irrigation",
++    name="PPO-Wheat",
++    monitor_gym=True,
++    save_code=True
++)
+ 
+-class RewardLogger:
+-    def __init__(self, agent_name, output_dir, num_intervals=100):
++def make_env():
++    return Monitor(Wheat(render_mode=None))
++
++# --- Custom callback ---
++class RewardLogging(BaseCallback):
++    def __init__(self, agent_name, output_dir, verbose=0, num_intervals=100):
++        super().__init__(verbose)
+         self.agent_name = agent_name
+         self.output_dir = output_dir
+         self.num_intervals = num_intervals
+         self.episode_rewards = []
++        self.current_episode_rewards = []
++        self.total_steps = 0
++
++    def _on_step(self) -> bool:
++        reward = self.locals['rewards'][0]
++        self.current_episode_rewards.append(reward)
++        self.total_steps += 1
++
++        if 'dones' in self.locals and any(self.locals['dones']):
++            total_reward = np.sum(self.current_episode_rewards)
++            self.episode_rewards.append(total_reward)
++            self.current_episode_rewards = []
++
++        return True
+ 
+-    def log(self, reward):
+-        self.episode_rewards.append(reward)
++    def _on_training_end(self):
++        if self.episode_rewards:
++            final_mean_reward = np.mean(self.episode_rewards)
++            final_std_reward = np.std(self.episode_rewards)
++            print(f"Training finished for {self.agent_name}. Final mean reward: {final_mean_reward}, Final reward std: {final_std_reward}")
++        self.plot_rewards()
+ 
+-    def finalize(self):
++    def plot_rewards(self):
+         rewards = np.array(self.episode_rewards)
+-        avg = np.mean(rewards)
+-        std = np.std(rewards)
+-        print(f"[{self.agent_name}] Final mean reward: {avg:.2f}, std: {std:.2f}")
+-        self._plot()
+-
+-    def _plot(self):
+-        x = np.arange(len(self.episode_rewards))
+-        plt.figure(figsize=(10, 5))
+-        plt.plot(x, self.episode_rewards, marker='o')
+-        plt.xlabel('Episodes')
+-        plt.ylabel('Total Reward')
+-        plt.grid(True)
+-        plt.tight_layout()
+-        plt.savefig(os.path.join(self.output_dir, f"reward_plot_{self.agent_name}.png"), dpi=300)
+-        plt.close()
+-
+-for train_timesteps in timestep_targets:
+-    wandb.init(
+-        project="ppo-wheat-irrigation",
+-        name=f"ppo_agent_{train_timesteps}",
+-        config={
+-            "train_timesteps": train_timesteps,
+-            "gamma": 0.98,
+-            "alpha": 6.34e-04,
+-            "gae_lambda": 0.95,
+-            "policy_clip": 0.22,
+-            "batch_size": 512,
+-            "n_epochs": 23
+-        }
++        if len(rewards) >= self.num_intervals:
++            interval_size = len(rewards) // self.num_intervals
++            avg_rewards = np.array([
++                np.mean(rewards[i * interval_size:(i + 1) * interval_size])
++                for i in range(self.num_intervals)
++            ])
++            wandb.log({"Average_Reward": avg_rewards[-1]})
++            x = np.arange(self.num_intervals) * interval_size
++            plt.figure(figsize=(10, 5))
++            plt.plot(x, avg_rewards, marker='o')
++            plt.xlabel('Episodes')
++            plt.ylabel('Average Total Reward')
++            plt.grid(True)
++            plt.savefig(os.path.join(self.output_dir, f'reward_plot_{self.agent_name}.png'), format='png', dpi=300)
++            plt.close()
++        else:
++            wandb.log({"Total Reward": rewards[-1]})
++            x = np.arange(len(rewards))
++            plt.figure(figsize=(10, 5))
++            plt.plot(x, rewards, marker='o')
++            plt.xlabel('Episodes')
++            plt.ylabel('Total Reward')
++            plt.grid(True)
++            plt.savefig(os.path.join(self.output_dir, f'reward_plot_{self.agent_name}.png'), format='png', dpi=300)
++            plt.close()
++
++# --- Training loop ---
++timestep_values = [500_000, 1_000_000, 1_500_000, 2_000_000, 2_500_000]
++
++for train_timesteps in timestep_values:
++    def make_env():
++        return Monitor(Wheat(mode='train', year1=1982, year2=2007))
++
++    train_env = DummyVecEnv([make_env])
++    train_env = VecNormalize(train_env, norm_obs=True, norm_reward=True)
++
++    model_name = f"ppo_model_{train_timesteps}"
++    log_dir = os.path.join(output_dir, f"tensorboard_logs_{train_timesteps}")
++    os.makedirs(log_dir, exist_ok=True)
++
++    ppo_reward_logging = RewardLogging(
++        agent_name=model_name,
++        output_dir=output_dir,
++        num_intervals=100
+     )
+ 
+-    env = Wheat(mode="train", year1=1982, year2=2007)
+-    agent = Agent(
+-        n_actions=env.action_space.n,
+-        input_dims=env.observation_space.shape,
+-        gamma=0.98,
+-        alpha=6.34e-04,
+-        gae_lambda=0.95,
+-        policy_clip=0.22,
++    ppo_model = PPO(
++        "MlpPolicy",
++        train_env,
++        learning_rate=6.34e-04,
++        n_steps=2048,
+         batch_size=512,
+-        N=2048,
+-        n_epochs=23
++        n_epochs=23,
++        gamma=0.98,
++        clip_range=0.22,
++        ent_coef=4.50e-04,
++        verbose=1,
++        tensorboard_log=log_dir
+     )
+-    logger = RewardLogger(agent_name=f"ppo_agent{train_timesteps}", output_dir=output_dir)
+-
+-    total_timesteps = 0
+-    episode = 0
+-
+-    while total_timesteps < train_timesteps:
+-        obs, _ = env.reset()
+-        done = False
+-        score = 0
+-        steps = 0
+-
+-        while not done:
+-            action, prob, val = agent.choose_action(obs)
+-            obs_, reward, done, _, _ = env.step(action)
+-            agent.remember(obs, action, prob, val, reward, done)
+-            score += reward
+-            steps += 1
+-            obs = obs_
+-
+-        agent.learn()
+-        logger.log(score)
+-        total_timesteps += steps
+-
+-        wandb.log({
+-            "Episode": episode,
+-            "Episode_Reward": score,
+-            "Steps_in_Episode": steps,
+-            "Total_Timesteps": total_timesteps
+-        })
+-        print(f"[{train_timesteps}] Episode {episode} | Steps: {steps} | Reward: {score:.2f} | Timesteps: {total_timesteps}")
+-        episode += 1
+-
+-    agent.save_model(path=os.path.join(output_dir, f"ppo_agent_{train_timesteps}.pth"))
+-    logger.finalize()
++
++    print(f"Training {model_name} for {train_timesteps} timesteps...")
++    ppo_model.learn(total_timesteps=train_timesteps, callback=ppo_reward_logging)
++
++    model_output_path = os.path.join(output_dir, f"{model_name}.zip")
++    vecnorm_output_path = os.path.join(output_dir, f"{model_name}_vecnormalize.pkl")
++
++    ppo_model.save(model_output_path)
++    train_env.save(vecnorm_output_path)
++    train_env.close()
+     wandb.finish()
++
++    print(f"Training completed for {model_name}.\n")
+diff --git a/wandb/debug-internal.log b/wandb/debug-internal.log
+index 6be07cf2..5fc3ab65 120000
+--- a/wandb/debug-internal.log
++++ b/wandb/debug-internal.log
+@@ -1 +1 @@
+-run-20250514_173134-tquvlse2/logs/debug-internal.log
+\ No newline at end of file
++run-20250515_150859-jezq7rgv/logs/debug-internal.log
+\ No newline at end of file
+diff --git a/wandb/debug.log b/wandb/debug.log
+index 0caca5f3..1088e79a 120000
+--- a/wandb/debug.log
++++ b/wandb/debug.log
+@@ -1 +1 @@
+-run-20250514_173134-tquvlse2/logs/debug.log
+\ No newline at end of file
++run-20250515_150859-jezq7rgv/logs/debug.log
+\ No newline at end of file
+diff --git a/wandb/latest-run b/wandb/latest-run
+index 13f962c5..dd894a8a 120000
+--- a/wandb/latest-run
++++ b/wandb/latest-run
+@@ -1 +1 @@
+-run-20250514_173134-tquvlse2
+\ No newline at end of file
++run-20250515_150859-jezq7rgv
+\ No newline at end of file

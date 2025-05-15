@@ -1,0 +1,24 @@
+Using cpu device
+Training ppo_model_500000 for 500000 timesteps...
+Traceback (most recent call last):
+  File "/Users/jintpongchababnapa/Documents/Dissertation/agent/train.py", line 117, in <module>
+    ppo_model.learn(total_timesteps=train_timesteps, callback=ppo_reward_logging)
+  File "/Users/jintpongchababnapa/Documents/Dissertation/agent/venv310/lib/python3.10/site-packages/stable_baselines3/ppo/ppo.py", line 311, in learn
+    return super().learn(
+  File "/Users/jintpongchababnapa/Documents/Dissertation/agent/venv310/lib/python3.10/site-packages/stable_baselines3/common/on_policy_algorithm.py", line 311, in learn
+    total_timesteps, callback = self._setup_learn(
+  File "/Users/jintpongchababnapa/Documents/Dissertation/agent/venv310/lib/python3.10/site-packages/stable_baselines3/common/base_class.py", line 424, in _setup_learn
+    self._last_obs = self.env.reset()  # type: ignore[assignment]
+  File "/Users/jintpongchababnapa/Documents/Dissertation/agent/venv310/lib/python3.10/site-packages/stable_baselines3/common/vec_env/vec_normalize.py", line 297, in reset
+    obs = self.venv.reset()
+  File "/Users/jintpongchababnapa/Documents/Dissertation/agent/venv310/lib/python3.10/site-packages/stable_baselines3/common/vec_env/dummy_vec_env.py", line 78, in reset
+    obs, self.reset_infos[env_idx] = self.envs[env_idx].reset(seed=self._seeds[env_idx], **maybe_options)
+  File "/Users/jintpongchababnapa/Documents/Dissertation/agent/venv310/lib/python3.10/site-packages/stable_baselines3/common/monitor.py", line 83, in reset
+    return self.env.reset(**kwargs)
+  File "/Users/jintpongchababnapa/Documents/Dissertation/agent/aquacropgymnasium/env.py", line 60, in reset
+    self.model = AquaCropModel(
+  File "/Users/jintpongchababnapa/Documents/Dissertation/agent/venv310/lib/python3.10/site-packages/aquacrop/core.py", line 109, in __init__
+    self.sim_start_time = sim_start_time
+  File "/Users/jintpongchababnapa/Documents/Dissertation/agent/venv310/lib/python3.10/site-packages/aquacrop/core.py", line 150, in sim_start_time
+    raise ValueError("sim_start_time format must be 'YYYY/MM/DD'")
+ValueError: sim_start_time format must be 'YYYY/MM/DD'

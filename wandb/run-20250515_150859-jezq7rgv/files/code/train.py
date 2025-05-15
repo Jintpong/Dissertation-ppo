@@ -1,5 +1,4 @@
 import os
-import torch 
 import numpy as np
 import matplotlib.pyplot as plt
 import wandb
@@ -8,9 +7,6 @@ from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize
 from stable_baselines3.common.callbacks import BaseCallback
 from stable_baselines3.common.monitor import Monitor
 from aquacropgymnasium.env import Wheat
-
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-print(f"Using device: {device}")
 
 output_dir = './train_output'
 os.makedirs(output_dir, exist_ok=True)
@@ -23,12 +19,7 @@ wandb.init(
 )
 
 def make_env():
-    return Monitor(Wheat(
-        mode='train',
-        year1=1982,
-        year2=2007,
-        sim_start_time="1982/01/01"  
-    ))
+    return Monitor(Wheat(render_mode=None))
 
 # --- Custom callback ---
 class RewardLogging(BaseCallback):
@@ -38,10 +29,8 @@ class RewardLogging(BaseCallback):
         self.output_dir = output_dir
         self.num_intervals = num_intervals
         self.episode_rewards = []
-        self.episode_lengths = []
         self.current_episode_rewards = []
         self.total_steps = 0
-        self.current_episode_length = 0
 
     def _on_step(self) -> bool:
         reward = self.locals['rewards'][0]
@@ -50,17 +39,8 @@ class RewardLogging(BaseCallback):
 
         if 'dones' in self.locals and any(self.locals['dones']):
             total_reward = np.sum(self.current_episode_rewards)
-            ep_len = self.current_episode_length
             self.episode_rewards.append(total_reward)
             self.current_episode_rewards = []
-
-            wandb.log({
-                "ep_rew": total_reward,
-                "ep_len": ep_len
-            }, step=self.num_timesteps)
-
-            self.current_episode_rewards = []
-            self.current_episode_length = 0
 
         return True
 
@@ -122,7 +102,6 @@ for train_timesteps in timestep_values:
     ppo_model = PPO(
         "MlpPolicy",
         train_env,
-        device=device,
         learning_rate=6.34e-04,
         n_steps=2048,
         batch_size=512,

@@ -41,7 +41,6 @@ class RewardLogging(BaseCallback):
         self.episode_lengths = []
         self.current_episode_rewards = []
         self.total_steps = 0
-        self.current_episode_length = 0
 
     def _on_step(self) -> bool:
         reward = self.locals['rewards'][0]
