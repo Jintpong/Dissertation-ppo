@@ -1,0 +1,40 @@
+diff --git a/train.py b/train.py
+index b0e15b75..207249fb 100644
+--- a/train.py
++++ b/train.py
+@@ -26,7 +26,7 @@ def make_env():
+     return Monitor(Wheat(
+         mode='train',
+         year1=1982,
+-        year2=2007,
++        year2=2018,
+         sim_start_time="1982/01/01"  
+     ))
+ 
+diff --git a/wandb/debug-internal.log b/wandb/debug-internal.log
+index f94d119a..2486f225 120000
+--- a/wandb/debug-internal.log
++++ b/wandb/debug-internal.log
+@@ -1 +1 @@
+-run-20250515_152304-6ogt6mfp/logs/debug-internal.log
+\ No newline at end of file
++run-20250515_153558-cbk4o9hz/logs/debug-internal.log
+\ No newline at end of file
+diff --git a/wandb/debug.log b/wandb/debug.log
+index 48c56ca9..c6b5a8f5 120000
+--- a/wandb/debug.log
++++ b/wandb/debug.log
+@@ -1 +1 @@
+-run-20250515_152304-6ogt6mfp/logs/debug.log
+\ No newline at end of file
++run-20250515_153558-cbk4o9hz/logs/debug.log
+\ No newline at end of file
+diff --git a/wandb/latest-run b/wandb/latest-run
+index 8f7a5f6f..86ff72a4 120000
+--- a/wandb/latest-run
++++ b/wandb/latest-run
+@@ -1 +1 @@
+-run-20250515_152304-6ogt6mfp
+\ No newline at end of file
++run-20250515_153558-cbk4o9hz
+\ No newline at end of file
