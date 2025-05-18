@@ -1,0 +1,25 @@
+Using cpu device
+/Users/jintpongchababnapa/Documents/Dissertation/agent/venv310/lib/python3.10/site-packages/stable_baselines3/common/policies.py:486: UserWarning: As shared layers in the mlp_extractor are removed since SB3 v1.8.0, you should now pass directly a dictionary and not a list (net_arch=dict(pi=..., vf=...) instead of net_arch=[dict(pi=..., vf=...)])
+  warnings.warn(
+Training ppo_model_500000 for 500000 timesteps...
+Logging to ./train_output/tensorboard_logs_500000/PPO_6
+----------------------------------
+| rollout/           |           |
+|    ep_len_mean     | 196       |
+|    ep_rew_mean     | -2.47e+05 |
+| time/              |           |
+|    fps             | 459       |
+|    iterations      | 1         |
+|    time_elapsed    | 8         |
+|    total_timesteps | 4096      |
+----------------------------------
+Traceback (most recent call last):
+  File "/Users/jintpongchababnapa/Documents/Dissertation/agent/train.py", line 140, in <module>
+    ppo_model.learn(total_timesteps=train_timesteps, callback=ppo_reward_logging)
+  File "/Users/jintpongchababnapa/Documents/Dissertation/agent/ppo2.py", line 253, in learn
+    return super().learn(
+  File "/Users/jintpongchababnapa/Documents/Dissertation/agent/venv310/lib/python3.10/site-packages/stable_baselines3/common/on_policy_algorithm.py", line 337, in learn
+    self.train()
+  File "/Users/jintpongchababnapa/Documents/Dissertation/agent/ppo2.py", line 168, in train
+    policy_loss_2 = advantages * th.clamp(ratio, 1 - clip_range, 1 + clip_range)
+TypeError: unsupported operand type(s) for -: 'int' and 'function'

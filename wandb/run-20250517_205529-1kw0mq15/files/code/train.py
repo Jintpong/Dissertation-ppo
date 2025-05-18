@@ -17,7 +17,7 @@ os.makedirs(output_dir, exist_ok=True)
 
 wandb.init(
     project="ppo-irrigation",
-    name=f"PPO-Wheat-{train_timesteps}",
+    name="PPO-Wheat",
     monitor_gym=True,
     save_code=True,
     reinit=True 
@@ -101,7 +101,7 @@ class RewardLogging(BaseCallback):
             plt.close()
 
 # --- Training loop ---
-timestep_values = [2_000_000]
+timestep_values = [500_000, 1_000_000, 2_000_000]
 
 for train_timesteps in timestep_values:
     def make_env():

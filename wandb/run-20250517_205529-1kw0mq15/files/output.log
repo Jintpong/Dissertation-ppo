@@ -1,0 +1,11 @@
+Using cpu device
+/Users/jintpongchababnapa/Documents/Dissertation/agent/venv310/lib/python3.10/site-packages/stable_baselines3/common/policies.py:486: UserWarning: As shared layers in the mlp_extractor are removed since SB3 v1.8.0, you should now pass directly a dictionary and not a list (net_arch=dict(pi=..., vf=...) instead of net_arch=[dict(pi=..., vf=...)])
+  warnings.warn(
+Traceback (most recent call last):
+  File "/Users/jintpongchababnapa/Documents/Dissertation/agent/train.py", line 123, in <module>
+    ppo_model = PPO(
+  File "/Users/jintpongchababnapa/Documents/Dissertation/agent/ppo2.py", line 113, in __init__
+    self._setup_model()
+  File "/Users/jintpongchababnapa/Documents/Dissertation/agent/ppo2.py", line 119, in _setup_model
+    self.clip_range = FloatSchedule(self.clip_range)
+NameError: name 'FloatSchedule' is not defined

@@ -1,0 +1,335 @@
+diff --git a/.DS_Store b/.DS_Store
+index f978a5d7..be44a9ad 100644
+Binary files a/.DS_Store and b/.DS_Store differ
+diff --git a/eval_output/combined_irrigations.png b/eval_output/combined_irrigations.png
+deleted file mode 100644
+index 4f9412d4..00000000
+Binary files a/eval_output/combined_irrigations.png and /dev/null differ
+diff --git a/eval_output/combined_profits.png b/eval_output/combined_profits.png
+deleted file mode 100644
+index f7c1c7d6..00000000
+Binary files a/eval_output/combined_profits.png and /dev/null differ
+diff --git a/eval_output/combined_water_efficiency.png b/eval_output/combined_water_efficiency.png
+deleted file mode 100644
+index cc49fc78..00000000
+Binary files a/eval_output/combined_water_efficiency.png and /dev/null differ
+diff --git a/eval_output/combined_yields.png b/eval_output/combined_yields.png
+deleted file mode 100644
+index 8620b319..00000000
+Binary files a/eval_output/combined_yields.png and /dev/null differ
+diff --git a/eval_output/comparison_results.csv b/eval_output/comparison_results.csv
+deleted file mode 100644
+index 3440f409..00000000
+--- a/eval_output/comparison_results.csv
++++ /dev/null
+@@ -1,6 +0,0 @@
+-Dry yield (tonne/ha)_mean,Dry yield (tonne/ha)_std,Seasonal irrigation (mm)_mean,Seasonal irrigation (mm)_std,Profit_mean,WaterEfficiency_mean,label
+-5.85971667578193,0.0,2350.0,0.0,-1560.8623313279754,2.4934964577795444,Random
+-6.225729690965115,0.8128153761848285,424.7610390420007,59.71305791299318,444.8994929703247,14.657016813515964,Interval
+-4.901967631939847,1.1948936697723933,0.0,0.0,578.4328790267664,,Rainfed
+-6.217823281189286,0.8157080621235794,210.8108108108108,111.10876499024575,657.110311050832,29.494802744103023,Thresholds
+-5.859416534539744,0.0,333.3333333333333,0.0,455.73830426541053,17.578249603619234,PPO
+diff --git a/eval_output/ppo_timesteps_results.csv b/eval_output/ppo_timesteps_results.csv
+deleted file mode 100644
+index a5b75b62..00000000
+--- a/eval_output/ppo_timesteps_results.csv
++++ /dev/null
+@@ -1,4 +0,0 @@
+-Dry yield (tonne/ha)_mean,Dry yield (tonne/ha)_std,Seasonal irrigation (mm)_mean,Seasonal irrigation (mm)_std,Profit_mean,WaterEfficiency_mean,label
+-5.859744909646445,0.0,341.6666666666667,0.0,447.47721345555124,17.15047290628228,PPO_500000
+-5.859416534539744,0.0,333.3333333333333,0.0,455.73830426541053,17.578249603619234,PPO_1000000
+-5.858285890255604,0.0,333.3333333333333,0.0,455.48956252289963,17.57485767076681,PPO_2000000
+diff --git a/ppo2.py b/ppo2.py
+index e4b584ab..bcf103a1 100644
+--- a/ppo2.py
++++ b/ppo2.py
+@@ -5,12 +5,17 @@ import numpy as np
+ import torch as th
+ from gymnasium import spaces
+ from torch.nn import functional as F
+-from ppo2 import PPO 
++
+ from stable_baselines3.common.buffers import RolloutBuffer
+ from stable_baselines3.common.on_policy_algorithm import OnPolicyAlgorithm
+-from stable_baselines3.common.policies import ActorCriticCnnPolicy, ActorCriticPolicy, BasePolicy, MultiInputActorCriticPolicy
++from stable_baselines3.common.policies import (
++    ActorCriticCnnPolicy,
++    ActorCriticPolicy,
++    BasePolicy,
++    MultiInputActorCriticPolicy,
++)
+ from stable_baselines3.common.type_aliases import GymEnv, MaybeCallback, Schedule
+-from stable_baselines3.common.utils import FloatSchedule, explained_variance
++from stable_baselines3.common.utils import explained_variance
+ 
+ SelfPPO = TypeVar("SelfPPO", bound="PPO")
+ 
+@@ -81,21 +86,14 @@ class PPO(OnPolicyAlgorithm):
+             ),
+         )
+ 
+-        # Sanity check, otherwise it will lead to noisy gradient and NaN
+-        # because of the advantage normalization
+         if normalize_advantage:
+-            assert (
+-                batch_size > 1
+-            ), 
++            assert batch_size > 1
+ 
+         if self.env is not None:
+-            # Check that `n_steps * n_envs > 1` to avoid NaN
+-            # when doing advantage normalization
+             buffer_size = self.env.num_envs * self.n_steps
+             assert buffer_size > 1 or (
+                 not normalize_advantage
+             ), f"`n_steps * n_envs` must be greater than 1. Currently n_steps={self.n_steps} and n_envs={self.env.num_envs}"
+-            # Check that the rollout buffer size is a multiple of the mini-batch size
+             untruncated_batches = buffer_size // batch_size
+             if buffer_size % batch_size > 0:
+                 warnings.warn(
+@@ -106,10 +104,15 @@ class PPO(OnPolicyAlgorithm):
+                     f"We recommend using a `batch_size` that is a factor of `n_steps * n_envs`.\n"
+                     f"Info: (n_steps={self.n_steps} and n_envs={self.env.num_envs})"
+                 )
++
+         self.batch_size = batch_size
+         self.n_epochs = n_epochs
+-        self.clip_range = clip_range
+-        self.clip_range_vf = clip_range_vf
++        self._clip_range = clip_range
++        self.clip_range = lambda progress: self._clip_range
++        self._clip_range_vf = clip_range_vf
++        self.clip_range_vf = (
++            (lambda progress: self._clip_range_vf) if clip_range_vf is not None else None
++        )
+         self.normalize_advantage = normalize_advantage
+         self.target_kl = target_kl
+ 
+@@ -118,93 +121,66 @@ class PPO(OnPolicyAlgorithm):
+ 
+     def _setup_model(self) -> None:
+         super()._setup_model()
+-
+-        # Initialize schedules for policy/value clipping
+-        self.clip_range = FloatSchedule(self.clip_range)
+-        if self.clip_range_vf is not None:
+-            if isinstance(self.clip_range_vf, (float, int)):
+-                assert self.clip_range_vf > 0, "`clip_range_vf` must be positive, " "pass `None` to deactivate vf clipping"
+-
+-            self.clip_range_vf = FloatSchedule(self.clip_range_vf)
++        # Nothing else needed here for clip_range
+ 
+     def train(self) -> None:
+-        """
+-        Update policy using the currently gathered rollout buffer.
+-        """
+-        # Switch to train mode (this affects batch norm / dropout)
+         self.policy.set_training_mode(True)
+-        # Update optimizer learning rate
+         self._update_learning_rate(self.policy.optimizer)
+-        # Compute current clip range
+-        clip_range = self.clip_range(self._current_progress_remaining)  # type: ignore[operator]
+-        # Optional: clip range for the value function
+-        if self.clip_range_vf is not None:
+-            clip_range_vf = self.clip_range_vf(self._current_progress_remaining)  # type: ignore[operator]
++        clip_range = self.clip_range(self._current_progress_remaining)
++        clip_range_vf = (
++            self.clip_range_vf(self._current_progress_remaining)
++            if self.clip_range_vf is not None
++            else None
++        )
+ 
+         entropy_losses = []
+         pg_losses, value_losses = [], []
+         clip_fractions = []
+ 
+         continue_training = True
+-        # train for n_epochs epochs
+         for epoch in range(self.n_epochs):
+             approx_kl_divs = []
+-            # Do a complete pass on the rollout buffer
++
+             for rollout_data in self.rollout_buffer.get(self.batch_size):
+                 actions = rollout_data.actions
+                 if isinstance(self.action_space, spaces.Discrete):
+-                    # Convert discrete action from float to long
+                     actions = rollout_data.actions.long().flatten()
+ 
+-                values, log_prob, entropy = self.policy.evaluate_actions(rollout_data.observations, actions)
++                values, log_prob, entropy = self.policy.evaluate_actions(
++                    rollout_data.observations, actions
++                )
+                 values = values.flatten()
+-                # Normalize advantage
+                 advantages = rollout_data.advantages
+-                # Normalization does not make sense if mini batchsize == 1, see GH issue #325
+                 if self.normalize_advantage and len(advantages) > 1:
+                     advantages = (advantages - advantages.mean()) / (advantages.std() + 1e-8)
+ 
+-                # ratio between old and new policy, should be one at the first iteration
+                 ratio = th.exp(log_prob - rollout_data.old_log_prob)
+ 
+-                # clipped surrogate loss
+                 policy_loss_1 = advantages * ratio
+                 policy_loss_2 = advantages * th.clamp(ratio, 1 - clip_range, 1 + clip_range)
+                 policy_loss = -th.min(policy_loss_1, policy_loss_2).mean()
+ 
+-                # Logging
+                 pg_losses.append(policy_loss.item())
+                 clip_fraction = th.mean((th.abs(ratio - 1) > clip_range).float()).item()
+                 clip_fractions.append(clip_fraction)
+ 
+-                if self.clip_range_vf is None:
+-                    # No clipping
++                if clip_range_vf is None:
+                     values_pred = values
+                 else:
+-                    # Clip the difference between old and new value
+-                    # NOTE: this depends on the reward scaling
+                     values_pred = rollout_data.old_values + th.clamp(
+                         values - rollout_data.old_values, -clip_range_vf, clip_range_vf
+                     )
+-                # Value loss using the TD(gae_lambda) target
+                 value_loss = F.mse_loss(rollout_data.returns, values_pred)
+                 value_losses.append(value_loss.item())
+ 
+-                # Entropy loss favor exploration
+                 if entropy is None:
+-                    # Approximate entropy when no analytical form
+                     entropy_loss = -th.mean(-log_prob)
+                 else:
+                     entropy_loss = -th.mean(entropy)
+-
+                 entropy_losses.append(entropy_loss.item())
+ 
+                 loss = policy_loss + self.ent_coef * entropy_loss + self.vf_coef * value_loss
+ 
+-                # Calculate approximate form of reverse KL Divergence for early stopping
+-                # see issue #417: https://github.com/DLR-RM/stable-baselines3/issues/417
+-                # and discussion in PR #419: https://github.com/DLR-RM/stable-baselines3/pull/419
+-                # and Schulman blog: http://joschu.net/blog/kl-approx.html
+                 with th.no_grad():
+                     log_ratio = log_prob - rollout_data.old_log_prob
+                     approx_kl_div = th.mean((th.exp(log_ratio) - 1) - log_ratio).cpu().numpy()
+@@ -216,10 +192,8 @@ class PPO(OnPolicyAlgorithm):
+                         print(f"Early stopping at step {epoch} due to reaching max kl: {approx_kl_div:.2f}")
+                     break
+ 
+-                # Optimization step
+                 self.policy.optimizer.zero_grad()
+                 loss.backward()
+-                # Clip grad norm
+                 th.nn.utils.clip_grad_norm_(self.policy.parameters(), self.max_grad_norm)
+                 self.policy.optimizer.step()
+ 
+@@ -227,9 +201,10 @@ class PPO(OnPolicyAlgorithm):
+             if not continue_training:
+                 break
+ 
+-        explained_var = explained_variance(self.rollout_buffer.values.flatten(), self.rollout_buffer.returns.flatten())
++        explained_var = explained_variance(
++            self.rollout_buffer.values.flatten(), self.rollout_buffer.returns.flatten()
++        )
+ 
+-        # Logs
+         self.logger.record("train/entropy_loss", np.mean(entropy_losses))
+         self.logger.record("train/policy_gradient_loss", np.mean(pg_losses))
+         self.logger.record("train/value_loss", np.mean(value_losses))
+@@ -239,10 +214,9 @@ class PPO(OnPolicyAlgorithm):
+         self.logger.record("train/explained_variance", explained_var)
+         if hasattr(self.policy, "log_std"):
+             self.logger.record("train/std", th.exp(self.policy.log_std).mean().item())
+-
+         self.logger.record("train/n_updates", self._n_updates, exclude="tensorboard")
+         self.logger.record("train/clip_range", clip_range)
+-        if self.clip_range_vf is not None:
++        if clip_range_vf is not None:
+             self.logger.record("train/clip_range_vf", clip_range_vf)
+ 
+     def learn(
+@@ -261,4 +235,4 @@ class PPO(OnPolicyAlgorithm):
+             tb_log_name=tb_log_name,
+             reset_num_timesteps=reset_num_timesteps,
+             progress_bar=progress_bar,
+-        )
+\ No newline at end of file
++        )
+diff --git a/train.py b/train.py
+index 207249fb..727a73bf 100644
+--- a/train.py
++++ b/train.py
+@@ -3,7 +3,7 @@ import torch
+ import numpy as np
+ import matplotlib.pyplot as plt
+ import wandb
+-from stable_baselines3 import PPO
++from ppo2 import PPO
+ from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize
+ from stable_baselines3.common.callbacks import BaseCallback
+ from stable_baselines3.common.monitor import Monitor
+@@ -19,7 +19,8 @@ wandb.init(
+     project="ppo-irrigation",
+     name="PPO-Wheat",
+     monitor_gym=True,
+-    save_code=True
++    save_code=True,
++    reinit=True 
+ )
+ 
+ def make_env():
+@@ -100,7 +101,7 @@ class RewardLogging(BaseCallback):
+             plt.close()
+ 
+ # --- Training loop ---
+-timestep_values = [500_000, 1_000_000, 1_500_000, 2_000_000, 2_500_000]
++timestep_values = [500_000, 1_000_000, 2_000_000]
+ 
+ for train_timesteps in timestep_values:
+     def make_env():
+@@ -123,13 +124,14 @@ for train_timesteps in timestep_values:
+         "MlpPolicy",
+         train_env,
+         device=device,
+-        learning_rate=6.34e-04,
+-        n_steps=2048,
++        learning_rate=2.5e-4,
++        n_steps=4096,
+         batch_size=512,
+         n_epochs=23,
+-        gamma=0.98,
+-        clip_range=0.22,
+-        ent_coef=4.50e-04,
++        gamma=0.99,
++        clip_range=0.1,
++        ent_coef=0.01,
++        policy_kwargs=dict(net_arch=[dict(pi=[128, 128], vf=[128, 128])]),
+         verbose=1,
+         tensorboard_log=log_dir
+     )
+diff --git a/wandb/debug-internal.log b/wandb/debug-internal.log
+index 2486f225..f1e83f84 120000
+--- a/wandb/debug-internal.log
++++ b/wandb/debug-internal.log
+@@ -1 +1 @@
+-run-20250515_153558-cbk4o9hz/logs/debug-internal.log
+\ No newline at end of file
++run-20250517_210216-dzb3uz0h/logs/debug-internal.log
+\ No newline at end of file
+diff --git a/wandb/debug.log b/wandb/debug.log
+index c6b5a8f5..2606b0a8 120000
+--- a/wandb/debug.log
++++ b/wandb/debug.log
+@@ -1 +1 @@
+-run-20250515_153558-cbk4o9hz/logs/debug.log
+\ No newline at end of file
++run-20250517_210216-dzb3uz0h/logs/debug.log
+\ No newline at end of file
+diff --git a/wandb/latest-run b/wandb/latest-run
+index 86ff72a4..285d3f04 120000
+--- a/wandb/latest-run
++++ b/wandb/latest-run
+@@ -1 +1 @@
+-run-20250515_153558-cbk4o9hz
+\ No newline at end of file
++run-20250517_210216-dzb3uz0h
+\ No newline at end of file

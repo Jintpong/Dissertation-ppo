@@ -1,0 +1,135 @@
+Using cpu device
+/Users/jintpongchababnapa/Documents/Dissertation/agent/venv310/lib/python3.10/site-packages/stable_baselines3/common/policies.py:486: UserWarning: As shared layers in the mlp_extractor are removed since SB3 v1.8.0, you should now pass directly a dictionary and not a list (net_arch=dict(pi=..., vf=...) instead of net_arch=[dict(pi=..., vf=...)])
+  warnings.warn(
+Training ppo_model_500000 for 500000 timesteps...
+Logging to ./train_output/tensorboard_logs_500000/PPO_9
+----------------------------------
+| rollout/           |           |
+|    ep_len_mean     | 196       |
+|    ep_rew_mean     | -2.44e+05 |
+| time/              |           |
+|    fps             | 470       |
+|    iterations      | 1         |
+|    time_elapsed    | 8         |
+|    total_timesteps | 4096      |
+----------------------------------
+------------------------------------------
+| rollout/                |              |
+|    ep_len_mean          | 196          |
+|    ep_rew_mean          | -2.36e+05    |
+| time/                   |              |
+|    fps                  | 460          |
+|    iterations           | 2            |
+|    time_elapsed         | 17           |
+|    total_timesteps      | 8192         |
+| train/                  |              |
+|    approx_kl            | 0.0023951964 |
+|    clip_fraction        | 0.103        |
+|    clip_range           | 0.1          |
+|    entropy_loss         | -0.691       |
+|    explained_variance   | 0.189        |
+|    learning_rate        | 0.00025      |
+|    loss                 | 0.0787       |
+|    n_updates            | 23           |
+|    policy_gradient_loss | -0.00464     |
+|    value_loss           | 0.532        |
+------------------------------------------
+----------------------------------------
+| rollout/                |            |
+|    ep_len_mean          | 196        |
+|    ep_rew_mean          | -2.23e+05  |
+| time/                   |            |
+|    fps                  | 457        |
+|    iterations           | 3          |
+|    time_elapsed         | 26         |
+|    total_timesteps      | 12288      |
+| train/                  |            |
+|    approx_kl            | 0.00316799 |
+|    clip_fraction        | 0.14       |
+|    clip_range           | 0.1        |
+|    entropy_loss         | -0.687     |
+|    explained_variance   | 0.899      |
+|    learning_rate        | 0.00025    |
+|    loss                 | 0.00208    |
+|    n_updates            | 46         |
+|    policy_gradient_loss | -0.00647   |
+|    value_loss           | 0.0967     |
+----------------------------------------
+------------------------------------------
+| rollout/                |              |
+|    ep_len_mean          | 196          |
+|    ep_rew_mean          | -2.09e+05    |
+| time/                   |              |
+|    fps                  | 457          |
+|    iterations           | 4            |
+|    time_elapsed         | 35           |
+|    total_timesteps      | 16384        |
+| train/                  |              |
+|    approx_kl            | 0.0035634404 |
+|    clip_fraction        | 0.137        |
+|    clip_range           | 0.1          |
+|    entropy_loss         | -0.678       |
+|    explained_variance   | 0.936        |
+|    learning_rate        | 0.00025      |
+|    loss                 | 0.00522      |
+|    n_updates            | 69           |
+|    policy_gradient_loss | -0.00698     |
+|    value_loss           | 0.0656       |
+------------------------------------------
+------------------------------------------
+| rollout/                |              |
+|    ep_len_mean          | 196          |
+|    ep_rew_mean          | -1.94e+05    |
+| time/                   |              |
+|    fps                  | 455          |
+|    iterations           | 5            |
+|    time_elapsed         | 44           |
+|    total_timesteps      | 20480        |
+| train/                  |              |
+|    approx_kl            | 0.0038631237 |
+|    clip_fraction        | 0.183        |
+|    clip_range           | 0.1          |
+|    entropy_loss         | -0.662       |
+|    explained_variance   | 0.944        |
+|    learning_rate        | 0.00025      |
+|    loss                 | 0.00429      |
+|    n_updates            | 92           |
+|    policy_gradient_loss | -0.00882     |
+|    value_loss           | 0.0373       |
+------------------------------------------
+Traceback (most recent call last):
+  File "/Users/jintpongchababnapa/Documents/Dissertation/agent/train.py", line 140, in <module>
+    ppo_model.learn(total_timesteps=train_timesteps, callback=ppo_reward_logging)
+  File "/Users/jintpongchababnapa/Documents/Dissertation/agent/ppo2.py", line 231, in learn
+    return super().learn(
+  File "/Users/jintpongchababnapa/Documents/Dissertation/agent/venv310/lib/python3.10/site-packages/stable_baselines3/common/on_policy_algorithm.py", line 324, in learn
+    continue_training = self.collect_rollouts(self.env, callback, self.rollout_buffer, n_rollout_steps=self.n_steps)
+  File "/Users/jintpongchababnapa/Documents/Dissertation/agent/venv310/lib/python3.10/site-packages/stable_baselines3/common/on_policy_algorithm.py", line 202, in collect_rollouts
+    actions, values, log_probs = self.policy(obs_tensor)
+  File "/Users/jintpongchababnapa/Documents/Dissertation/agent/venv310/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1751, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/Users/jintpongchababnapa/Documents/Dissertation/agent/venv310/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1762, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/Users/jintpongchababnapa/Documents/Dissertation/agent/venv310/lib/python3.10/site-packages/stable_baselines3/common/policies.py", line 647, in forward
+    latent_pi, latent_vf = self.mlp_extractor(features)
+  File "/Users/jintpongchababnapa/Documents/Dissertation/agent/venv310/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1751, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/Users/jintpongchababnapa/Documents/Dissertation/agent/venv310/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1762, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/Users/jintpongchababnapa/Documents/Dissertation/agent/venv310/lib/python3.10/site-packages/stable_baselines3/common/torch_layers.py", line 257, in forward
+    return self.forward_actor(features), self.forward_critic(features)
+  File "/Users/jintpongchababnapa/Documents/Dissertation/agent/venv310/lib/python3.10/site-packages/stable_baselines3/common/torch_layers.py", line 260, in forward_actor
+    return self.policy_net(features)
+  File "/Users/jintpongchababnapa/Documents/Dissertation/agent/venv310/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1751, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/Users/jintpongchababnapa/Documents/Dissertation/agent/venv310/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1762, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/Users/jintpongchababnapa/Documents/Dissertation/agent/venv310/lib/python3.10/site-packages/torch/nn/modules/container.py", line 240, in forward
+    input = module(input)
+  File "/Users/jintpongchababnapa/Documents/Dissertation/agent/venv310/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1751, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/Users/jintpongchababnapa/Documents/Dissertation/agent/venv310/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1762, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/Users/jintpongchababnapa/Documents/Dissertation/agent/venv310/lib/python3.10/site-packages/torch/nn/modules/activation.py", line 392, in forward
+    return torch.tanh(input)
+KeyboardInterrupt

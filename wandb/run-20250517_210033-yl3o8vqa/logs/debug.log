@@ -1,0 +1,23 @@
+2025-05-17 21:00:33,475 INFO    MainThread:44715 [wandb_setup.py:_flush():70] Current SDK version is 0.19.11
+2025-05-17 21:00:33,475 INFO    MainThread:44715 [wandb_setup.py:_flush():70] Configure stats pid to 44715
+2025-05-17 21:00:33,475 INFO    MainThread:44715 [wandb_setup.py:_flush():70] Loading settings from /Users/jintpongchababnapa/.config/wandb/settings
+2025-05-17 21:00:33,475 INFO    MainThread:44715 [wandb_setup.py:_flush():70] Loading settings from /Users/jintpongchababnapa/Documents/Dissertation/agent/wandb/settings
+2025-05-17 21:00:33,475 INFO    MainThread:44715 [wandb_setup.py:_flush():70] Loading settings from environment variables
+2025-05-17 21:00:33,475 INFO    MainThread:44715 [wandb_init.py:setup_run_log_directory():724] Logging user logs to /Users/jintpongchababnapa/Documents/Dissertation/agent/wandb/run-20250517_210033-yl3o8vqa/logs/debug.log
+2025-05-17 21:00:33,475 INFO    MainThread:44715 [wandb_init.py:setup_run_log_directory():725] Logging internal logs to /Users/jintpongchababnapa/Documents/Dissertation/agent/wandb/run-20250517_210033-yl3o8vqa/logs/debug-internal.log
+2025-05-17 21:00:33,476 INFO    MainThread:44715 [wandb_init.py:init():852] calling init triggers
+2025-05-17 21:00:33,476 INFO    MainThread:44715 [wandb_init.py:init():857] wandb.init called with sweep_config: {}
+config: {'_wandb': {'code_path': 'code/train.py'}}
+2025-05-17 21:00:33,476 INFO    MainThread:44715 [wandb_init.py:init():893] starting backend
+2025-05-17 21:00:33,476 INFO    MainThread:44715 [wandb_init.py:init():897] sending inform_init request
+2025-05-17 21:00:33,505 INFO    MainThread:44715 [backend.py:_multiprocessing_setup():101] multiprocessing start_methods=spawn,fork,forkserver, using: spawn
+2025-05-17 21:00:33,507 INFO    MainThread:44715 [wandb_init.py:init():907] backend started and connected
+2025-05-17 21:00:33,510 INFO    MainThread:44715 [wandb_init.py:init():1005] updated telemetry
+2025-05-17 21:00:33,538 INFO    MainThread:44715 [wandb_init.py:init():1029] communicating run to backend with 90.0 second timeout
+2025-05-17 21:00:34,189 INFO    MainThread:44715 [wandb_init.py:init():1104] starting run threads in backend
+2025-05-17 21:00:34,335 INFO    MainThread:44715 [wandb_run.py:_console_start():2573] atexit reg
+2025-05-17 21:00:34,335 INFO    MainThread:44715 [wandb_run.py:_redirect():2421] redirect: wrap_raw
+2025-05-17 21:00:34,335 INFO    MainThread:44715 [wandb_run.py:_redirect():2490] Wrapping output streams.
+2025-05-17 21:00:34,335 INFO    MainThread:44715 [wandb_run.py:_redirect():2513] Redirects installed.
+2025-05-17 21:00:34,338 INFO    MainThread:44715 [wandb_init.py:init():1150] run started, returning control to user process
+2025-05-17 21:00:44,338 INFO    MsgRouterThr:44715 [mailbox.py:close():129] [no run ID] Closing mailbox, abandoning 1 handles.
